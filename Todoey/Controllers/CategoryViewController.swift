@@ -69,7 +69,7 @@ class CategoryViewController: SwipeTableViewController {
     
     // Load data of Category type
     func loadCategories() {
-        categories = realm.objects(Category.self)
+        categories = realm.objects(Category.self).sorted(byKeyPath: "name", ascending: true)
         tableView.reloadData()
     }
     
@@ -83,6 +83,7 @@ class CategoryViewController: SwipeTableViewController {
                     let categoryItems = categoryToDelete.items
                     realm.delete(categoryItems)
                     realm.delete(categoryToDelete)
+                    categories = realm.objects(Category.self).sorted(byKeyPath: "name", ascending: true)
                 }
             } catch {
                 print("Error deleting category \(error.localizedDescription)")
@@ -95,7 +96,7 @@ class CategoryViewController: SwipeTableViewController {
     func promptUser() {
         if categories?.count == 0 {
             let alert = UIAlertController(title: "Yay! You're all set here", message: nil, preferredStyle: .alert)
-            alert.addAction(UIAlertAction(title: "Add a Todo", style: .default, handler: { (action) in
+            alert.addAction(UIAlertAction(title: "Add a category", style: .default, handler: { (action) in
                 alert.dismiss(animated: true, completion: nil)
                 self.addCategory()
             }))
@@ -109,12 +110,12 @@ class CategoryViewController: SwipeTableViewController {
     // MARK: - Add category
     func addCategory() {
         var textField = UITextField()
-        let alert = UIAlertController(title: "Add new a Todo", message: nil, preferredStyle: .alert)
+        let alert = UIAlertController(title: "Add new a category", message: nil, preferredStyle: .alert)
         alert.addTextField { (textFieldAlert) in
-            textFieldAlert.placeholder = "Todo's title"
+            textFieldAlert.placeholder = "Category name"
             textField = textFieldAlert
         }
-        alert.addAction(UIAlertAction(title: "Add Todo", style: .default, handler: { (action) in
+        alert.addAction(UIAlertAction(title: "Add category", style: .default, handler: { (action) in
             if textField.text != "" {
                 let newCategory = Category()
                 newCategory.name = textField.text!
